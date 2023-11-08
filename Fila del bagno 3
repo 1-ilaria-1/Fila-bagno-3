@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Gestione Fila Bagno in Classe</title>
+    <link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>Registrazione per il Bagno in Classe</h1>
+    </header>
+    <main>
+        <form id="registration-form">
+            <label for="student-name">Nome dello studente:</label>
+            <input type="text" id="student-name" name="student-name" required>
+            <label for="entry-time">Orario previsto di accesso al bagno:</label>
+            <input type="time" id="entry-time" name="entry-time" required>
+            <button type="submit">Registrati</button>
+        </form>
+        <div id="queue-status">
+            <h2>Stato della Fila</h2>
+            <p><strong>Numero di studenti in fila:</strong> <span id="queue-count">0</span></p>
+            <p><strong>Prossimo studente in fila:</strong> <span id="next-student">Nessuno</span></p>
+        </div>
+    </main>
+    <script src="script.js"></script>
+</body>
+</html>
+/* Stile globale */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;
+    margin: 0;
+    padding: 0;
+}
+
+header {
+    background-color: #3498db;
+    color: #fff;
+    text-align: center;
+    padding: 20px;
+}
+
+main {
+    max-width: 600px;
+    margin: 0 auto;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+}
+
+/* Aggiungi qui ulteriori stili CSS personalizzati per il tuo progetto */
+// Aggiungi il codice JavaScript per la gestione del modulo di registrazione
+// e l'aggiornamento dello stato della fila qui
