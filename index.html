@@ -1,55 +1,85 @@
 <!DOCTYPE html>
-<html>
-<head>
+<html lang="en">
+ <head>
     <meta charset="UTF-8">
-    <title>Gestione Fila Bagno in Classe</title>
-    <link rel="stylesheet" type="text/css" href="style.css">
-</head>
-<body>
-    <header>
-        <h1>Registrazione per il Bagno in Classe</h1>
-    </header>
-    <main>
-        <form id="registration-form">
-            <label for="student-name">Nome dello studente:</label>
-            <input type="text" id="student-name" name="student-name" required>
-            <label for="entry-time">Orario previsto di accesso al bagno:</label>
-            <input type="time" id="entry-time" name="entry-time" required>
-            <button type="submit">Registrati</button>
-        </form>
-        <div id="queue-status">
-            <h2>Stato della Fila</h2>
-            <p><strong>Numero di studenti in fila:</strong> <span id="queue-count">0</span></p>
-            <p><strong>Prossimo studente in fila:</strong> <span id="next-student">Nessuno</span></p>
-        </div>
-    </main>
-    <script src="script.js"></script>
-</body>
-</html>
-/* Stile globale */
-body {
-    font-family: Arial, sans-serif;
-    background-color: #f0f0f0;
-    margin: 0;
-    padding: 0;
-}
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Queue Management</title>
+ </head>
+ <body>
+    <h1>Queue Management</h1>
+    <form id="queue-form">
+      <input type="text" id="name" placeholder="Enter your name" required>
+      <button type="submit">Add to Queue</button>
+    </form>
+    <ul id="queue-list"></ul>
+    <p id="queue-status">Number of people in queue: 0</p>
+    <script type="module">
+      // Import Firebase libraries
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.6.0/firebase-app.js";
+      import { getDatabase, ref, push, remove, onChildAdded, onValue } from "https://www.gstatic.com/firebasejs/10.6.0/firebase-database.js";
 
-header {
-    background-color: #3498db;
-    color: #fff;
-    text-align: center;
-    padding: 20px;
-}
+      // Firebase configuration
+      const firebaseConfig = {
+        apiKey: "AIzaSyBdEbLZOwJ-LPknlvoAnaDg31kzgFHd880",
+  authDomain: "fila-bagno-40570.firebaseapp.com",
+  databaseURL: "https://fila-bagno-40570-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "fila-bagno-40570",
+  storageBucket: "fila-bagno-40570.appspot.com",
+  messagingSenderId: "887107745831",
+  appId: "1:887107745831:web:b5b024f663c2471211f602"
+      };
 
-main {
-    max-width: 600px;
-    margin: 0 auto;
-    background-color: #fff;
-    padding: 20px;
-    border-radius: 5px;
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
-}
+      // Initialize Firebase
+      const app = initializeApp(firebaseConfig);
+      const database = getDatabase();
+      const queueRef = ref(database, "queue");
 
-/* Aggiungi qui ulteriori stili CSS personalizzati per il tuo progetto */
-// Aggiungi il codice JavaScript per la gestione del modulo di registrazione
-// e l'aggiornamento dello stato della fila qui
+      const queueForm = document.getElementById("queue-form");
+      const queueList = document.getElementById("queue-list");
+      const queueStatus = document.getElementById("queue-status");
+
+      // Function to remove a person from the queue
+      const removePerson = (key) => {
+        remove(ref(queueRef, key), (error) => {
+          if (error) {
+            console.error("Error during removal:", error);
+          }
+        });
+      };
+
+      onChildAdded(queueRef, (childSnapshot) => {
+        const name = childSnapshot.val();
+        const listItem = document.createElement("li");
+        listItem.textContent = name;
+
+        const deleteButton = document.createElement("button");
+        deleteButton.textContent = "Delete";
+        deleteButton.addEventListener("click", () => {
+          // Call the removal function with the child key
+          removePerson(childSnapshot.key);
+        });
+
+        listItem.appendChild(deleteButton);
+        queueList.appendChild(listItem);
+      });
+
+      onValue(queueRef, (snapshot) => {
+        const queueArray = [];
+        snapshot.forEach((childSnapshot) => {
+          const name = childSnapshot.val();
+          queueArray.push(name);
+        });
+
+        queueStatus.textContent = "Number of people in queue: " + queueArray.length;
+      });
+
+      queueForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const nameInput = document.getElementById("name");
+        const name = nameInput.value;
+
+        if (name) {
+          push(queueRef, name);
+          nameInput.value = "";
+        }
+      });
